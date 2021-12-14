@@ -17,290 +17,11 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1ecc2ada-e7d9-449a-a149-74c4dbc78a57"
+				"spark.autotune.trackingId": "0d279342-7054-4f03-b52b-25bcdc42297b"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
-			"synapse_widget": {
-				"version": "0.1",
-				"state": {
-					"d54c94ff-83ce-48e0-a090-63855e458315": {
-						"type": "Synapse.DataFrame",
-						"sync_state": {
-							"table": {
-								"rows": [
-									{
-										"0": "1",
-										"1": "0",
-										"2": "Mr.",
-										"3": "Orlando",
-										"4": "N.",
-										"5": "Gee",
-										"6": "NULL",
-										"7": "A Bike Store",
-										"8": "adventure-works\\pamela0",
-										"9": "orlando0@adventure-works.com",
-										"10": "245-555-0173",
-										"11": "L/Rlwxzp4w7RWmEgXX+/A7cXaePEPcp+KwQhl2fJL7w=",
-										"12": "1KjXYs4=",
-										"13": "3F5AE95E-B87D-4AED-95B4-C3797AFCB74F",
-										"14": "2005-08-01 00:00:00.000"
-									},
-									{
-										"0": "2",
-										"1": "0",
-										"2": "Mr.",
-										"3": "Keith",
-										"4": "NULL",
-										"5": "Harris",
-										"6": "NULL",
-										"7": "Progressive Sports",
-										"8": "adventure-works\\david8",
-										"9": "keith0@adventure-works.com",
-										"10": "170-555-0127",
-										"11": "YPdtRdvqeAhj6wyxEsFdshBDNXxkCXn+CRgbvJItknw=",
-										"12": "fs1ZGhY=",
-										"13": "E552F657-A9AF-4A7D-A645-C429D6E02491",
-										"14": "2006-08-01 00:00:00.000"
-									},
-									{
-										"0": "3",
-										"1": "0",
-										"2": "Ms.",
-										"3": "Donna",
-										"4": "F.",
-										"5": "Carreras",
-										"6": "NULL",
-										"7": "Advanced Bike Components",
-										"8": "adventure-works\\jillian0",
-										"9": "donna0@adventure-works.com",
-										"10": "279-555-0130",
-										"11": "LNoK27abGQo48gGue3EBV/UrlYSToV0/s87dCRV7uJk=",
-										"12": "YTNH5Rw=",
-										"13": "130774B1-DB21-4EF3-98C8-C104BCD6ED6D",
-										"14": "2005-09-01 00:00:00.000"
-									},
-									{
-										"0": "4",
-										"1": "0",
-										"2": "Ms.",
-										"3": "Janet",
-										"4": "M.",
-										"5": "Gates",
-										"6": "NULL",
-										"7": "Modular Cycle Systems",
-										"8": "adventure-works\\jillian0",
-										"9": "janet1@adventure-works.com",
-										"10": "710-555-0173",
-										"11": "ElzTpSNbUW1Ut+L5cWlfR7MF6nBZia8WpmGaQPjLOJA=",
-										"12": "nm7D5e4=",
-										"13": "FF862851-1DAA-4044-BE7C-3E85583C054D",
-										"14": "2006-07-01 00:00:00.000"
-									},
-									{
-										"0": "5",
-										"1": "0",
-										"2": "Mr.",
-										"3": "Lucy",
-										"4": "NULL",
-										"5": "Harrington",
-										"6": "NULL",
-										"7": "Metropolitan Sports Supply",
-										"8": "adventure-works\\shu0",
-										"9": "lucy0@adventure-works.com",
-										"10": "828-555-0186",
-										"11": "KJqV15wsX3PG8TS5GSddp6LFFVdd3CoRftZM/tP0+R4=",
-										"12": "cNFKU4w=",
-										"13": "83905BDC-6F5E-4F71-B162-C98DA069F38A",
-										"14": "2006-09-01 00:00:00.000"
-									},
-									{
-										"0": "6",
-										"1": "0",
-										"2": "Ms.",
-										"3": "Rosmarie",
-										"4": "J.",
-										"5": "Carroll",
-										"6": "NULL",
-										"7": "Aerobic Exercise Company",
-										"8": "adventure-works\\linda3",
-										"9": "rosmarie0@adventure-works.com",
-										"10": "244-555-0112",
-										"11": "OKT0scizCdIzymHHOtyJKQiC/fCILSooSZ8dQ2Y34VM=",
-										"12": "ihWf50M=",
-										"13": "1A92DF88-BFA2-467D-BD54-FCB9E647FDD7",
-										"14": "2007-09-01 00:00:00.000"
-									},
-									{
-										"0": "7",
-										"1": "0",
-										"2": "Mr.",
-										"3": "Dominic",
-										"4": "P.",
-										"5": "Gash",
-										"6": "NULL",
-										"7": "Associated Bikes",
-										"8": "adventure-works\\shu0",
-										"9": "dominic0@adventure-works.com",
-										"10": "192-555-0173",
-										"11": "ZccoP/jZGQm+Xpzc7RKwDhS11YFNybwcPVRYTSNcnSg=",
-										"12": "sPoUBSQ=",
-										"13": "03E9273E-B193-448E-9823-FE0C44AEED78",
-										"14": "2006-07-01 00:00:00.000"
-									},
-									{
-										"0": "10",
-										"1": "0",
-										"2": "Ms.",
-										"3": "Kathleen",
-										"4": "M.",
-										"5": "Garza",
-										"6": "NULL",
-										"7": "Rural Cycle Emporium",
-										"8": "adventure-works\\josé1",
-										"9": "kathleen0@adventure-works.com",
-										"10": "150-555-0127",
-										"11": "Qa3aMCxNbVLGrc0b99KsbQqiVgwYDfHcsK9GZSUxcTM=",
-										"12": "Ls05W3g=",
-										"13": "CDB6698D-2FF1-4FBA-8F22-60AD1D11DABD",
-										"14": "2006-09-01 00:00:00.000"
-									},
-									{
-										"0": "11",
-										"1": "0",
-										"2": "Ms.",
-										"3": "Katherine",
-										"4": "NULL",
-										"5": "Harding",
-										"6": "NULL",
-										"7": "Sharp Bikes",
-										"8": "adventure-works\\josé1",
-										"9": "katherine0@adventure-works.com",
-										"10": "926-555-0159",
-										"11": "uRlorVzDGNJIX9I+ehTlRK+liT4UKRgWhApJgUMC2d4=",
-										"12": "jpHKbqE=",
-										"13": "750F3495-59C4-48A0-80E1-E37EC60E77D9",
-										"14": "2005-08-01 00:00:00.000"
-									},
-									{
-										"0": "12",
-										"1": "0",
-										"2": "Mr.",
-										"3": "Johnny",
-										"4": "A.",
-										"5": "Caprio",
-										"6": "Jr.",
-										"7": "Bikes and Motorbikes",
-										"8": "adventure-works\\garrett1",
-										"9": "johnny0@adventure-works.com",
-										"10": "112-555-0191",
-										"11": "jtF9jBoFYeJTaET7x+eJDkd7BzMz15Wo9odbGPBaIak=",
-										"12": "wVLnvHo=",
-										"13": "947BCAF1-1F32-44F3-B9C3-0011F95FBE54",
-										"14": "2006-08-01 00:00:00.000"
-									}
-								],
-								"schema": [
-									{
-										"key": "0",
-										"name": "CustomerID",
-										"type": "string"
-									},
-									{
-										"key": "1",
-										"name": "NameStyle",
-										"type": "string"
-									},
-									{
-										"key": "2",
-										"name": "Title",
-										"type": "string"
-									},
-									{
-										"key": "3",
-										"name": "FirstName",
-										"type": "string"
-									},
-									{
-										"key": "4",
-										"name": "MiddleName",
-										"type": "string"
-									},
-									{
-										"key": "5",
-										"name": "LastName",
-										"type": "string"
-									},
-									{
-										"key": "6",
-										"name": "Suffix",
-										"type": "string"
-									},
-									{
-										"key": "7",
-										"name": "CompanyName",
-										"type": "string"
-									},
-									{
-										"key": "8",
-										"name": "SalesPerson",
-										"type": "string"
-									},
-									{
-										"key": "9",
-										"name": "EmailAddress",
-										"type": "string"
-									},
-									{
-										"key": "10",
-										"name": "Phone",
-										"type": "string"
-									},
-									{
-										"key": "11",
-										"name": "PasswordHash",
-										"type": "string"
-									},
-									{
-										"key": "12",
-										"name": "PasswordSalt",
-										"type": "string"
-									},
-									{
-										"key": "13",
-										"name": "rowguid",
-										"type": "string"
-									},
-									{
-										"key": "14",
-										"name": "ModifiedDate",
-										"type": "string"
-									}
-								]
-							},
-							"isSummary": false,
-							"language": "scala"
-						},
-						"persist_state": {
-							"view": {
-								"type": "details",
-								"chartOptions": {
-									"chartType": "bar",
-									"aggregationType": "count",
-									"categoryFieldKeys": [
-										"0"
-									],
-									"seriesFieldKeys": [
-										"0"
-									],
-									"isStacked": false
-								}
-							}
-						}
-					}
-				}
-			},
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
@@ -322,8 +43,9 @@
 				"nodeCount": 3,
 				"cores": 4,
 				"memory": 28,
-				"extraHeader": null
-			}
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
 		},
 		"cells": [
 			{
@@ -352,7 +74,6 @@
 					")\r\n",
 					"display(df.limit(10))"
 				],
-				"attachments": null,
 				"execution_count": 8
 			},
 			{
@@ -377,7 +98,6 @@
 					"    format='parquet')\r\n",
 					"display(df.limit(10))"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -403,7 +123,6 @@
 					"    format='DELTA')\r\n",
 					"display(df.limit(10))"
 				],
-				"attachments": null,
 				"execution_count": 5
 			},
 			{
@@ -422,7 +141,6 @@
 				"source": [
 					"df.write.format(\"DELTA\").save('abfss://staging@testingstoragegen2.dfs.core.windows.net/SalesLTCustomer_delta/')"
 				],
-				"attachments": null,
 				"execution_count": 3
 			},
 			{
@@ -441,7 +159,6 @@
 				"source": [
 					"df.write.format(\"PARQUET\").save('abfss://staging@testingstoragegen2.dfs.core.windows.net/SalesLTCustomer_parquet/')"
 				],
-				"attachments": null,
 				"execution_count": 4
 			}
 		]
