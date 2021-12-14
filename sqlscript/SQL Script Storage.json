@@ -1,0 +1,17 @@
+{
+	"name": "SQL Script Storage",
+	"properties": {
+		"content": {
+			"query": "-- This is auto-generated code\nCREATE VIEW TestView AS\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://testingstoragegen2.dfs.core.windows.net/staging/SalesLTCustomerAddress.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '2.0',\n        FIELDTERMINATOR =';',\n        HEADER_ROW = TRUE,\n        ESCAPECHAR = '\\\\'\n    ) AS [result]\n\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "TestDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

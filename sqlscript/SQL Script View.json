@@ -1,0 +1,17 @@
+{
+	"name": "SQL Script View",
+	"properties": {
+		"content": {
+			"query": "SELECT * from dbo.TestView",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "TestDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

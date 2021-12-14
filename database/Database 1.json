@@ -1,0 +1,25 @@
+{
+	"name": "Database 1",
+	"properties": {
+		"Origin": {
+			"Type": "SPARK"
+		},
+		"Properties": {
+			"IsSyMSCDMDatabase": true
+		},
+		"Source": {
+			"Provider": "ADLS",
+			"Location": "abfss://dev@testingstoragegen2.dfs.core.windows.net/Database 1",
+			"Properties": {
+				"FormatType": "csv",
+				"LinkedServiceName": "testingworkspace-WorkspaceDefaultStorage"
+			}
+		},
+		"PublishStatus": "PUBLISHED",
+		"ObjectVersion": 1,
+		"ObjectId": "89486ce5-a9f3-4825-8fa4-d1faf1525e4c",
+		"Name": "Database 1",
+		"EntityType": "DATABASE"
+	},
+	"type": "DATABASE"
+}
