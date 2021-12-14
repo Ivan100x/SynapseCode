@@ -1,0 +1,1308 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"type": "string",
+			"metadata": "Workspace name",
+			"defaultValue": "testingworkspace"
+		},
+		"asastore01_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'asastore01'"
+		},
+		"testingworkspace-WorkspaceDefaultSqlServer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'testingworkspace-WorkspaceDefaultSqlServer'"
+		},
+		"testingworkspace-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://testingstoragegen2.dfs.core.windows.net"
+		}
+	},
+	"variables": {
+		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('workspaceName'), '/PowerBiLS')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "PowerBIWorkspace",
+				"typeProperties": {
+					"workspaceID": "36a87a54-0a05-42ad-9f5b-e1f75019c7a3",
+					"tenantID": "ca1d08b0-9543-4bd9-8718-42becddc7786"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/asastore01')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('asastore01_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/testingworkspace-WorkspaceDefaultSqlServer')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"connectionString": "[parameters('testingworkspace-WorkspaceDefaultSqlServer_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/testingworkspace-WorkspaceDefaultStorage')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('testingworkspace-WorkspaceDefaultStorage_properties_typeProperties_url')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AutoResolveIntegrationRuntime')]",
+			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 0
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
+			"type": "Microsoft.Synapse/workspaces/credentials",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL Script Storage')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- This is auto-generated code\nCREATE VIEW TestView AS\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://testingstoragegen2.dfs.core.windows.net/staging/SalesLTCustomerAddress.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '2.0',\n        FIELDTERMINATOR =';',\n        HEADER_ROW = TRUE,\n        ESCAPECHAR = '\\\\'\n    ) AS [result]\n\n\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "TestDB",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL Script View')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "SELECT * from dbo.TestView",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "TestDB",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Notebook 1')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "SparkPoolTest",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "a1d59d06-83ff-4a50-99f0-850974d8df08"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"synapse_widget": {
+						"version": "0.1",
+						"state": {
+							"f50a4a53-4415-4d42-96c6-dc4d686e544e": {
+								"type": "Synapse.DataFrame",
+								"sync_state": {
+									"table": {
+										"rows": [
+											{
+												"0": "CA",
+												"1": "22",
+												"2": "45000"
+											},
+											{
+												"0": "WA",
+												"1": "35",
+												"2": "65000"
+											},
+											{
+												"0": "WA",
+												"1": "50",
+												"2": "85000"
+											}
+										],
+										"schema": [
+											{
+												"key": "0",
+												"name": "state",
+												"type": "string"
+											},
+											{
+												"key": "1",
+												"name": "age",
+												"type": "bigint"
+											},
+											{
+												"key": "2",
+												"name": "salary",
+												"type": "bigint"
+											}
+										]
+									},
+									"isSummary": false,
+									"language": "scala"
+								},
+								"persist_state": {
+									"view": {
+										"type": "details",
+										"chartOptions": {
+											"chartType": "bar",
+											"aggregationType": "sum",
+											"categoryFieldKeys": [
+												"0"
+											],
+											"seriesFieldKeys": [
+												"1"
+											],
+											"isStacked": false
+										}
+									}
+								}
+							},
+							"54d37ceb-5e26-45a1-9c93-6f61856ddd3a": {
+								"type": "Synapse.DataFrame",
+								"sync_state": {
+									"table": {
+										"rows": [
+											{
+												"0": "1",
+												"1": "0",
+												"2": "Mr.",
+												"3": "Orlando",
+												"4": "N.",
+												"5": "Gee",
+												"6": "NULL",
+												"7": "A Bike Store",
+												"8": "adventure-works\\pamela0",
+												"9": "orlando0@adventure-works.com",
+												"10": "245-555-0173",
+												"11": "L/Rlwxzp4w7RWmEgXX+/A7cXaePEPcp+KwQhl2fJL7w=",
+												"12": "1KjXYs4=",
+												"13": "3F5AE95E-B87D-4AED-95B4-C3797AFCB74F",
+												"14": "2005-08-01 00:00:00.000"
+											},
+											{
+												"0": "2",
+												"1": "0",
+												"2": "Mr.",
+												"3": "Keith",
+												"4": "NULL",
+												"5": "Harris",
+												"6": "NULL",
+												"7": "Progressive Sports",
+												"8": "adventure-works\\david8",
+												"9": "keith0@adventure-works.com",
+												"10": "170-555-0127",
+												"11": "YPdtRdvqeAhj6wyxEsFdshBDNXxkCXn+CRgbvJItknw=",
+												"12": "fs1ZGhY=",
+												"13": "E552F657-A9AF-4A7D-A645-C429D6E02491",
+												"14": "2006-08-01 00:00:00.000"
+											},
+											{
+												"0": "3",
+												"1": "0",
+												"2": "Ms.",
+												"3": "Donna",
+												"4": "F.",
+												"5": "Carreras",
+												"6": "NULL",
+												"7": "Advanced Bike Components",
+												"8": "adventure-works\\jillian0",
+												"9": "donna0@adventure-works.com",
+												"10": "279-555-0130",
+												"11": "LNoK27abGQo48gGue3EBV/UrlYSToV0/s87dCRV7uJk=",
+												"12": "YTNH5Rw=",
+												"13": "130774B1-DB21-4EF3-98C8-C104BCD6ED6D",
+												"14": "2005-09-01 00:00:00.000"
+											},
+											{
+												"0": "4",
+												"1": "0",
+												"2": "Ms.",
+												"3": "Janet",
+												"4": "M.",
+												"5": "Gates",
+												"6": "NULL",
+												"7": "Modular Cycle Systems",
+												"8": "adventure-works\\jillian0",
+												"9": "janet1@adventure-works.com",
+												"10": "710-555-0173",
+												"11": "ElzTpSNbUW1Ut+L5cWlfR7MF6nBZia8WpmGaQPjLOJA=",
+												"12": "nm7D5e4=",
+												"13": "FF862851-1DAA-4044-BE7C-3E85583C054D",
+												"14": "2006-07-01 00:00:00.000"
+											},
+											{
+												"0": "5",
+												"1": "0",
+												"2": "Mr.",
+												"3": "Lucy",
+												"4": "NULL",
+												"5": "Harrington",
+												"6": "NULL",
+												"7": "Metropolitan Sports Supply",
+												"8": "adventure-works\\shu0",
+												"9": "lucy0@adventure-works.com",
+												"10": "828-555-0186",
+												"11": "KJqV15wsX3PG8TS5GSddp6LFFVdd3CoRftZM/tP0+R4=",
+												"12": "cNFKU4w=",
+												"13": "83905BDC-6F5E-4F71-B162-C98DA069F38A",
+												"14": "2006-09-01 00:00:00.000"
+											},
+											{
+												"0": "6",
+												"1": "0",
+												"2": "Ms.",
+												"3": "Rosmarie",
+												"4": "J.",
+												"5": "Carroll",
+												"6": "NULL",
+												"7": "Aerobic Exercise Company",
+												"8": "adventure-works\\linda3",
+												"9": "rosmarie0@adventure-works.com",
+												"10": "244-555-0112",
+												"11": "OKT0scizCdIzymHHOtyJKQiC/fCILSooSZ8dQ2Y34VM=",
+												"12": "ihWf50M=",
+												"13": "1A92DF88-BFA2-467D-BD54-FCB9E647FDD7",
+												"14": "2007-09-01 00:00:00.000"
+											},
+											{
+												"0": "7",
+												"1": "0",
+												"2": "Mr.",
+												"3": "Dominic",
+												"4": "P.",
+												"5": "Gash",
+												"6": "NULL",
+												"7": "Associated Bikes",
+												"8": "adventure-works\\shu0",
+												"9": "dominic0@adventure-works.com",
+												"10": "192-555-0173",
+												"11": "ZccoP/jZGQm+Xpzc7RKwDhS11YFNybwcPVRYTSNcnSg=",
+												"12": "sPoUBSQ=",
+												"13": "03E9273E-B193-448E-9823-FE0C44AEED78",
+												"14": "2006-07-01 00:00:00.000"
+											},
+											{
+												"0": "10",
+												"1": "0",
+												"2": "Ms.",
+												"3": "Kathleen",
+												"4": "M.",
+												"5": "Garza",
+												"6": "NULL",
+												"7": "Rural Cycle Emporium",
+												"8": "adventure-works\\josé1",
+												"9": "kathleen0@adventure-works.com",
+												"10": "150-555-0127",
+												"11": "Qa3aMCxNbVLGrc0b99KsbQqiVgwYDfHcsK9GZSUxcTM=",
+												"12": "Ls05W3g=",
+												"13": "CDB6698D-2FF1-4FBA-8F22-60AD1D11DABD",
+												"14": "2006-09-01 00:00:00.000"
+											},
+											{
+												"0": "11",
+												"1": "0",
+												"2": "Ms.",
+												"3": "Katherine",
+												"4": "NULL",
+												"5": "Harding",
+												"6": "NULL",
+												"7": "Sharp Bikes",
+												"8": "adventure-works\\josé1",
+												"9": "katherine0@adventure-works.com",
+												"10": "926-555-0159",
+												"11": "uRlorVzDGNJIX9I+ehTlRK+liT4UKRgWhApJgUMC2d4=",
+												"12": "jpHKbqE=",
+												"13": "750F3495-59C4-48A0-80E1-E37EC60E77D9",
+												"14": "2005-08-01 00:00:00.000"
+											},
+											{
+												"0": "12",
+												"1": "0",
+												"2": "Mr.",
+												"3": "Johnny",
+												"4": "A.",
+												"5": "Caprio",
+												"6": "Jr.",
+												"7": "Bikes and Motorbikes",
+												"8": "adventure-works\\garrett1",
+												"9": "johnny0@adventure-works.com",
+												"10": "112-555-0191",
+												"11": "jtF9jBoFYeJTaET7x+eJDkd7BzMz15Wo9odbGPBaIak=",
+												"12": "wVLnvHo=",
+												"13": "947BCAF1-1F32-44F3-B9C3-0011F95FBE54",
+												"14": "2006-08-01 00:00:00.000"
+											}
+										],
+										"schema": [
+											{
+												"key": "0",
+												"name": "CustomerID",
+												"type": "string"
+											},
+											{
+												"key": "1",
+												"name": "NameStyle",
+												"type": "string"
+											},
+											{
+												"key": "2",
+												"name": "Title",
+												"type": "string"
+											},
+											{
+												"key": "3",
+												"name": "FirstName",
+												"type": "string"
+											},
+											{
+												"key": "4",
+												"name": "MiddleName",
+												"type": "string"
+											},
+											{
+												"key": "5",
+												"name": "LastName",
+												"type": "string"
+											},
+											{
+												"key": "6",
+												"name": "Suffix",
+												"type": "string"
+											},
+											{
+												"key": "7",
+												"name": "CompanyName",
+												"type": "string"
+											},
+											{
+												"key": "8",
+												"name": "SalesPerson",
+												"type": "string"
+											},
+											{
+												"key": "9",
+												"name": "EmailAddress",
+												"type": "string"
+											},
+											{
+												"key": "10",
+												"name": "Phone",
+												"type": "string"
+											},
+											{
+												"key": "11",
+												"name": "PasswordHash",
+												"type": "string"
+											},
+											{
+												"key": "12",
+												"name": "PasswordSalt",
+												"type": "string"
+											},
+											{
+												"key": "13",
+												"name": "rowguid",
+												"type": "string"
+											},
+											{
+												"key": "14",
+												"name": "ModifiedDate",
+												"type": "string"
+											}
+										]
+									},
+									"isSummary": false,
+									"language": "scala"
+								},
+								"persist_state": {
+									"view": {
+										"type": "details",
+										"chartOptions": {
+											"chartType": "bar",
+											"aggregationType": "count",
+											"categoryFieldKeys": [
+												"0"
+											],
+											"seriesFieldKeys": [
+												"0"
+											],
+											"isStacked": false
+										}
+									}
+								}
+							}
+						}
+					},
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/808e7ccb-a3db-4388-b780-0b437ee61044/resourceGroups/TestingGroup/providers/Microsoft.Synapse/workspaces/testingworkspace/bigDataPools/SparkPoolTest",
+						"name": "SparkPoolTest",
+						"type": "Spark",
+						"endpoint": "https://testingworkspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPoolTest",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 3,
+						"cores": 4,
+						"memory": 28,
+						"extraHeader": null
+					}
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"demo_df = spark.read.load('abfss://staging@testingstoragegen2.dfs.core.windows.net/SalesLTCustomer.csv', \r\n",
+							"    format='csv', \r\n",
+							"    sep=';',\r\n",
+							"    header=True\r\n",
+							")\r\n",
+							"display(df.limit(10))"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 24
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"new_rows = [('CA',22, 45000),(\"WA\",35,65000) ,(\"WA\",50,85000)]\r\n",
+							"demo_df = spark.createDataFrame(new_rows, ['state', 'age', 'salary'])\r\n",
+							"demo_df.show()"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 5
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"demo_df.createOrReplaceTempView('demo_df2')\r\n",
+							"demo_df.write.csv('demo_df', mode='overwrite')\r\n",
+							"demo_df.write.parquet('abfss://staging@testingstoragegen2.dfs.core.windows.net/demodata/demo_df', mode='overwrite')"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 25
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"SHOW TABLES"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 26
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"SELECT * FROM demo_df2"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 29
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							}
+						},
+						"source": [
+							"%%sql\r\n",
+							"SELECT \r\n",
+							"    CityKey,\r\n",
+							"    SUM(Salary) as TotalQuantity,\r\n",
+							"    COUNT(DISTINCT State) as UniqueCities\r\n",
+							"FROM delta.`abfss://wwi@YOUR_DATALAKE_NAME.dfs.core.windows.net/factsale-deltalake`\r\n",
+							"WHERE InvoiceYear=2012\r\n",
+							"    and InvoiceQuarter=1\r\n",
+							"GROUP BY CityKey\r\n",
+							"ORDER BY TotalQuantity desc\r\n",
+							"LIMIT 10"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"# Otra manera de consultar los datos con spark sin tener que usar el magic command %%sql\r\n",
+							"dfaux = spark.sql('SELECT * FROM demo_df')\r\n",
+							"display(dfaux)"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 10
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"demo_df.withColumn(\"salary\",col(\"salary\").cast(\"Integer\")).show()"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 30
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df_final = spark.sql(\"\")\r\n",
+							"\r\n",
+							""
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Pyspark Notebook')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "SparkPoolTest",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "cb68e559-56ea-4a01-923f-995b56b8a69f"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/808e7ccb-a3db-4388-b780-0b437ee61044/resourceGroups/TestingGroup/providers/Microsoft.Synapse/workspaces/testingworkspace/bigDataPools/SparkPoolTest",
+						"name": "SparkPoolTest",
+						"type": "Spark",
+						"endpoint": "https://testingworkspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPoolTest",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 3,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df_csv = spark.read.load('abfss://staging@testingstoragegen2.dfs.core.windows.net/SalesLTCustomer.csv', \r\n",
+							"format='csv', \r\n",
+							"sep=';',\r\n",
+							"header=True\r\n",
+							")\r\n",
+							"display(df.limit(10))\r\n",
+							"#comment"
+						],
+						"outputs": [],
+						"execution_count": 8
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							}
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.read.load('abfss://staging@testingstoragegen2.dfs.core.windows.net/SalesLTCustomer_parquet/', \r\n",
+							"    format='parquet')\r\n",
+							"display(df.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df_delta = spark.read.load('abfss://staging@testingstoragegen2.dfs.core.windows.net/SalesLTCustomer_delta/', \r\n",
+							"    format='DELTA')\r\n",
+							"display(df.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 5
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df.write.format(\"DELTA\").save('abfss://staging@testingstoragegen2.dfs.core.windows.net/SalesLTCustomer_delta/')"
+						],
+						"outputs": [],
+						"execution_count": 3
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df.write.format(\"PARQUET\").save('abfss://staging@testingstoragegen2.dfs.core.windows.net/SalesLTCustomer_parquet/')"
+						],
+						"outputs": [],
+						"execution_count": 4
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Database 1')]",
+			"type": "Microsoft.Synapse/workspaces/databases",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"Ddls": [
+					{
+						"ActionType": "CREATE",
+						"OldEntity": null,
+						"NewEntity": {
+							"Origin": {
+								"Type": "SPARK"
+							},
+							"Properties": {
+								"IsSyMSCDMDatabase": true
+							},
+							"Source": {
+								"Provider": "ADLS",
+								"Location": "abfss://dev@testingstoragegen2.dfs.core.windows.net/Database 1",
+								"Properties": {
+									"FormatType": "csv",
+									"LinkedServiceName": "testingworkspace-WorkspaceDefaultStorage"
+								}
+							},
+							"PublishStatus": "PUBLISHED",
+							"ObjectVersion": 1,
+							"ObjectId": "89486ce5-a9f3-4825-8fa4-d1faf1525e4c",
+							"Name": "Database 1",
+							"EntityType": "DATABASE"
+						},
+						"Source": {
+							"Type": "SPARK"
+						}
+					},
+					{
+						"ActionType": "CREATE",
+						"OldEntity": null,
+						"NewEntity": {
+							"TableType": "EXTERNAL",
+							"Namespace": {
+								"SchemaName": null,
+								"DatabaseName": "Database 1"
+							},
+							"StorageDescriptor": {
+								"Distribution": null,
+								"Columns": [
+									{
+										"Name": "CustomerID",
+										"Description": null,
+										"OriginDataTypeName": {
+											"TypeName": "long",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 0,
+											"Precision": 0,
+											"Scale": 0,
+											"Properties": {
+												"HIVE_TYPE_STRING": "long"
+											}
+										}
+									},
+									{
+										"Name": "NameStyle",
+										"Description": null,
+										"OriginDataTypeName": {
+											"TypeName": "long",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 0,
+											"Precision": 0,
+											"Scale": 0,
+											"Properties": {
+												"HIVE_TYPE_STRING": "long"
+											}
+										}
+									},
+									{
+										"Name": "Title",
+										"Description": null,
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 8000,
+											"Precision": 0,
+											"Scale": 0,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "FirstName",
+										"Description": null,
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 8000,
+											"Precision": 0,
+											"Scale": 0,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "MiddleName",
+										"Description": null,
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 8000,
+											"Precision": 0,
+											"Scale": 0,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "LastName",
+										"Description": null,
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 8000,
+											"Precision": 0,
+											"Scale": 0,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "Suffix",
+										"Description": null,
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 8000,
+											"Precision": 0,
+											"Scale": 0,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "CompanyName",
+										"Description": null,
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 8000,
+											"Precision": 0,
+											"Scale": 0,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "SalesPerson",
+										"Description": null,
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 8000,
+											"Precision": 0,
+											"Scale": 0,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "EmailAddress",
+										"Description": null,
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 8000,
+											"Precision": 0,
+											"Scale": 0,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "Phone",
+										"Description": null,
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 8000,
+											"Precision": 0,
+											"Scale": 0,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "PasswordHash",
+										"Description": null,
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 8000,
+											"Precision": 0,
+											"Scale": 0,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "PasswordSalt",
+										"Description": null,
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 8000,
+											"Precision": 0,
+											"Scale": 0,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "rowguid",
+										"Description": null,
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 256,
+											"Precision": 0,
+											"Scale": 0,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "ModifiedDate",
+										"Description": null,
+										"OriginDataTypeName": {
+											"TypeName": "timestamp",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 0,
+											"Precision": 0,
+											"Scale": 0,
+											"Properties": {
+												"TimestampFormat": "YYYY-MM-DD HH:MM:SS.fffffffff",
+												"HIVE_TYPE_STRING": "timestamp"
+											}
+										}
+									}
+								],
+								"ColumnSetEntityName": "1321957c-4247-4de9-8bb6-5dff27420f61",
+								"Format": {
+									"InputFormat": "org.apache.hadoop.mapred.SequenceFileInputFormat",
+									"OutputFormat": "org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat",
+									"FormatType": "csv",
+									"SerializeLib": "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe",
+									"Properties": {
+										"path": "abfss://staging@testingstoragegen2.dfs.core.windows.net/SalesLTCustomer.csv",
+										"delimiter": ",",
+										"firstRowAsHeader": "true",
+										"multiLine": "false",
+										"serialization.format": "1",
+										"FormatTypeSetToDatabaseDefault": false,
+										"header": "true"
+									}
+								},
+								"Source": {
+									"Provider": "ADLS",
+									"Location": "abfss://staging@testingstoragegen2.dfs.core.windows.net/SalesLTCustomer.csv",
+									"Properties": {
+										"LinkedServiceName": "testingworkspace-WorkspaceDefaultStorage",
+										"LocationSetToDatabaseDefault": false
+									}
+								},
+								"Properties": {
+									"textinputformat.record.delimiter": ",",
+									"compression": "{\"type\":\"None\",\"level\":\"optimal\"}",
+									"derivedModelAttributeInfo": "{\"attributeReferences\":{}}"
+								},
+								"Compressed": false,
+								"SerDeInfo": null,
+								"IsStoredAsSubdirectories": false
+							},
+							"Owner": null,
+							"CreateTime": 0,
+							"LastAccessTime": 0,
+							"Retention": 0,
+							"Temporary": false,
+							"IsRewriteEnabled": false,
+							"ViewOriginalText": null,
+							"ViewExpandedText": null,
+							"Origin": {
+								"Type": "SPARK"
+							},
+							"OriginObjectId": null,
+							"IsSharedEntity": false,
+							"PublishStatus": "PUBLISHED",
+							"Properties": {
+								"Description": "",
+								"DisplayFolderInfo": "{\"name\":\"Others\",\"colorCode\":\"\"}",
+								"PrimaryKeys": "",
+								"spark.sql.sources.provider": "csv",
+								"spark.sql.sources.schema.numParts": "1",
+								"spark.sql.sources.schema.part.0": "{\"type\":\"struct\",\"fields\":[{\"name\":\"CustomerID\",\"type\":\"long\",\"nullable\":true,\"metadata\":{}},{\"name\":\"NameStyle\",\"type\":\"long\",\"nullable\":true,\"metadata\":{}},{\"name\":\"Title\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"FirstName\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"MiddleName\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"LastName\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"Suffix\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"CompanyName\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"SalesPerson\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"EmailAddress\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"Phone\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"PasswordHash\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"PasswordSalt\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"rowguid\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"ModifiedDate\",\"type\":\"timestamp\",\"nullable\":true,\"metadata\":{}}]}"
+							},
+							"ObjectVersion": 1,
+							"ObjectId": "68ed17b2-e536-4704-9175-619802b67a94",
+							"Name": "tabletest",
+							"Description": "",
+							"EntityType": "TABLE"
+						},
+						"Source": {
+							"Type": "SPARK"
+						}
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DedicatedPoolTest')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"collation": "SQL_Latin1_General_CP1_CI_AS",
+				"maxSizeBytes": 263882790666240,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "westeurope"
+		}
+	]
+}
