@@ -5,11 +5,17 @@
 		"workspaceName": {
 			"value": "testingworkspace"
 		},
+		"AzureSqlDatabase1_connectionString": {
+			"value": ""
+		},
 		"asastore01_connectionString": {
 			"value": ""
 		},
 		"testingworkspace-WorkspaceDefaultSqlServer_connectionString": {
 			"value": ""
+		},
+		"ls_keyVault_properties_typeProperties_baseUrl": {
+			"value": "https://KeyVaultTesting0001.vault.azure.net/"
 		},
 		"testingworkspace-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"value": "https://testingstoragegen2.dfs.core.windows.net"
