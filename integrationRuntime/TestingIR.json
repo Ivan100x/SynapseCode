@@ -1,0 +1,7 @@
+{
+	"name": "TestingIR",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "IR para testear alta disponibilidad con mas de 1 nodo"
+	}
+}
